@@ -1,0 +1,25 @@
+{
+  "name": "uplynkhtml5playersdk",
+  "version": "2.0.17080800-RC1",
+  "description": "Uplynk HTML5 adaptive video player",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Uplynk/uplynkhtml5playersdk.git"
+  },
+  "keywords": [
+    "uplynk",
+    "html5",
+    "adaptive",
+    "video"
+  ],
+  "author": "support@uplynk.com",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/Uplynk/uplynkhtml5playersdk/issues"
+  },
+  "homepage": "https://github.com/Uplynk/uplynkhtml5playersdk#readme"
+}
