@@ -1,6 +1,6 @@
 {
   "name": "uplynkhtml5playersdk",
-  "version": "2.0.17080800-RC1",
+  "version": "2.0.17082900",
   "description": "Uplynk HTML5 adaptive video player",
   "main": "index.js",
   "scripts": {
