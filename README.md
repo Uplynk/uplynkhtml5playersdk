@@ -1,6 +1,6 @@
 # UplynkHTML5PlayerSDK
 
-This is the source repo for the 'uplynkhtml5playersdk' NPM package.
+NPM package https://www.npmjs.com/package/uplynkhtml5playersdk
 
 Documentation is at http://support.uplynk.com/doc_sdk_html5.html
 
