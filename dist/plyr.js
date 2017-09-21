@@ -163,7 +163,7 @@
             enabled:            true,
             key:                'plyr'
         },
-        controls:               ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', /*'pip', 'airplay',*/ 'fullscreen'],
+        controls:               ['play-large', 'play', 'progress', 'current-time', 'duration', 'mute', 'volume', 'settings', 'pip', /*'airplay',*/ 'fullscreen'],
         i18n: {
             restart:               'Restart',
             rewind:                'Rewind {seektime} secs',
