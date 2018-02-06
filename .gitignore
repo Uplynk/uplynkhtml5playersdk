@@ -7,6 +7,3 @@ dist/plyr.css
 dist/plyr.js
 dist/uplynk-core.js
 
-# don't do the gz
-dist/uplynk-adaptive.js.gz
-
