@@ -1,9 +1,3 @@
 # Dev files only
 dist/buildinfo.inc
 dist/js.makefile
-
-# use minified files of these:
-dist/plyr.css
-dist/plyr.js
-dist/uplynk-core.js
-
