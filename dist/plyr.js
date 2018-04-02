@@ -2824,6 +2824,11 @@
         // Seek to time
         // The input parameter can be an event or a number
         function _seek(input) {
+            // UPLYNK
+            if (!plyr.adaptivePlayer || !plyr.adaptivePlayer.canSeek()) {
+                return;
+            }
+
             var targetTime  = 0,
                 paused      = plyr.media.paused,
                 duration    = _getDuration();
@@ -3427,6 +3432,12 @@
                 percent     = 0,
                 visible     = config.classes.tooltip + '--visible';
 
+            // UPLYNK - hide the seek tooltip if we can't seek
+            if (!plyr.adaptivePlayer || !plyr.adaptivePlayer.canSeek()) {
+                _toggleClass(plyr.progress.seek.container, visible, false);
+                return;
+            }
+
             // Determine percentage, if already visible
             if (!event) {
                 if (_hasClass(plyr.progress.seek.container, visible)) {
@@ -3467,10 +3478,6 @@
             }
 
             plyr.time = time;
-
-            if (event && event.type === 'mouseup' && plyr.adaptivePlayer && plyr.adaptivePlayer.canSeek()) {
-                _seek(time);
-            }
 
             if (_inArray(config.controls, 'progress')) {
                 // Set position
@@ -4012,8 +4019,7 @@
             _proxyListener(plyr.buttons.speed, 'click', config.listeners.speed, _speed);
 
             // Seek
-            // uplynk - don't listen for events because we trigger seek manually
-            //_proxyListener(plyr.buttons.seek, inputEvent, config.listeners.seek, _seek);
+            _proxyListener(plyr.buttons.seek, inputEvent, config.listeners.seek, _seek);
 
             // Set volume
             _proxyListener(plyr.volume.input, inputEvent, config.listeners.volume, function() {
@@ -4506,6 +4512,14 @@
 
             // Sniff out the browser
             plyr.browser = _getBrowser();
+
+            //UPLYNK
+            //don't show thumbnails if we're on a mobile device.
+            // there isn't much real estate and the users finger
+            // covers up the thumbnail
+            if (plyr.browser.isTouch) {
+                config.showThumbnails = false;
+            }
 
             // Bail if nothing to setup
             if (!_is.htmlElement(plyr.media)) {
