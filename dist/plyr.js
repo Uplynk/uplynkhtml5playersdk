@@ -909,6 +909,7 @@
                 plyr.captions.fontIndex = index;
 
                 _updateCaptionCues();
+                _saveCaptionSettingsToStorage();
             });
         }
 
@@ -926,6 +927,7 @@
                 plyr.captions.fontColorIndex = index;
 
                 _updateCaptionCues();
+                _saveCaptionSettingsToStorage();
             });
         }
 
@@ -943,6 +945,7 @@
                 plyr.captions.fontSizeIndex = index;
 
                 _updateCaptionCues();
+                _saveCaptionSettingsToStorage();
             });
         }
 
@@ -960,6 +963,7 @@
                 plyr.captions.fontOpacityIndex = index;
 
                 _updateCaptionCues();
+                _saveCaptionSettingsToStorage();
             });
         }
 
@@ -977,6 +981,7 @@
                 plyr.captions.fontStyleIndex = index;
 
                 _updateCaptionCues();
+                _saveCaptionSettingsToStorage();
             });
         }
 
@@ -994,6 +999,7 @@
                 plyr.captions.backgroundColorIndex = index;
 
                 _updateCaptionCues();
+                _saveCaptionSettingsToStorage();
             });
         }
 
@@ -1011,6 +1017,7 @@
                 plyr.captions.backgroundOpacityIndex = index;
 
                 _updateCaptionCues();
+                _saveCaptionSettingsToStorage();
             });
         }
 
@@ -1067,6 +1074,11 @@
             var index = parseInt(buttonPressed.dataset.index);
 
             _setCaptionIndex(index);
+
+            // Set global
+            plyr.captionsEnabled = (index >= 0);
+            // Save captions state to localStorage
+            _saveCaptionSettingsToStorage();
         }
 
         function _updateSelectedCaptionTrack(captionTrackName) {
@@ -1136,6 +1148,7 @@
 
                 var fragment = document.createDocumentFragment();
                 var audioTracks = plyr.adaptivePlayer.audioTracks;
+                if (!audioTracks) return; // UPLYNK UP-8581
 
                 for (var i = 0; i < audioTracks.length; i++) {
                     var track = audioTracks[i];
@@ -1302,13 +1315,15 @@
                 config.i18n.dropShadow
             ];
 
-            plyr.captions.fontIndex = 3;
-            plyr.captions.fontColorIndex = 0;
-            plyr.captions.fontSizeIndex = 1;
-            plyr.captions.fontOpacityIndex = 0;
-            plyr.captions.fontStyleIndex = 4;
-            plyr.captions.backgroundColorIndex = 1;
-            plyr.captions.backgroundOpacityIndex = 3;
+            if (!_loadCaptionSettingsFromStorage()) {
+                plyr.captions.fontIndex = 3;
+                plyr.captions.fontColorIndex = 0;
+                plyr.captions.fontSizeIndex = 1;
+                plyr.captions.fontOpacityIndex = 0;
+                plyr.captions.fontStyleIndex = 4;
+                plyr.captions.backgroundColorIndex = 1;
+                plyr.captions.backgroundOpacityIndex = 3;
+            }
 
             plyr.captions.font = plyr.captions.fonts[plyr.captions.fontIndex];
             plyr.captions.fontColor = plyr.captions.colors[plyr.captions.fontColorIndex];
@@ -1782,12 +1797,54 @@
             _initAudioTrackMenu();
         }
 
+        function _loadCaptionSettingsFromStorage() {
+            if (plyr.storage && plyr.storage.captions) {
+                plyr.captions.fontIndex = plyr.storage.captions.fontIndex;
+                plyr.captions.fontColorIndex = plyr.storage.captions.fontColorIndex;
+                plyr.captions.fontSizeIndex = plyr.storage.captions.fontSizeIndex;
+                plyr.captions.fontOpacityIndex = plyr.storage.captions.fontOpacityIndex;
+                plyr.captions.fontStyleIndex = plyr.storage.captions.fontStyleIndex;
+                plyr.captions.backgroundColorIndex = plyr.storage.captions.backgroundColorIndex;
+                plyr.captions.backgroundOpacityIndex = plyr.storage.captions.backgroundOpacityIndex;
+                return true;
+            }
+            return false;
+        }
+
+        function _loadCaptionIndexFromStorage() {
+            // read localStorage and select track if in range
+            if (plyr.storage && plyr.storage.captions && plyr.storage.captions.selectedIndex &&
+                plyr.storage.captions.selectedIndex > 0 && plyr.storage.captions.selectedIndex < plyr.media.textTracks.length &&
+                (plyr.media.textTracks[plyr.storage.captions.selectedIndex].kind === 'subtitles' || plyr.media.textTracks[plyr.storage.captions.selectedIndex].kind === 'captions')) {
+                plyr.captionsEnabled = true;
+                _setCaptionIndex(plyr.storage.captions.selectedIndex)
+            }
+        }
+
+        function _saveCaptionSettingsToStorage() {
+            _updateStorage({
+                captions: {
+                    selectedIndex: config.captions.selectedIndex,
+                    fontIndex: plyr.captions.fontIndex,
+                    fontColorIndex: plyr.captions.fontColorIndex,
+                    fontSizeIndex: plyr.captions.fontSizeIndex,
+                    fontOpacityIndex: plyr.captions.fontOpacityIndex,
+                    fontStyleIndex: plyr.captions.fontStyleIndex,
+                    backgroundColorIndex: plyr.captions.backgroundColorIndex,
+                    backgroundOpacityIndex: plyr.captions.backgroundOpacityIndex,
+                }
+            });
+        }
+
         // Setup captions
         function _setupCaptions() {
             // Bail if not HTML5 video
             if (plyr.type !== 'video') {
                 return;
             }
+
+            // Load caption style selections from local storage
+            // _loadCaptionSettingsFromStorage();
 
             var addCue = TextTrack.prototype.addCue;
 
@@ -1798,6 +1855,7 @@
                 if (isCaptionTrack) {
                     //update caption cue menu as new text tracks are added (either by uplynk player or native)
                     _initCaptionMenu();
+                    _loadCaptionIndexFromStorage();
                 }
 
                 //override TextTrack.addCue() so we can style the cues
